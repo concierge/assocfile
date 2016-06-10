@@ -8,8 +8,8 @@ exports.match = function(event, commandPrefix) {
 	var s = event.body.toLowerCase();
 	for (var assoc in exports.config[event.thread_id]) {
 		if (s.indexOf(assoc.toLowerCase()) !== -1) {
-			if (!event.__assocateCmd) {
-				event.__associatedCmd = {
+			if (!event.__associateCmd) {
+				event.__associateCmd = {
 					thread: event.thread_id,
 					responses: []
 				};
@@ -22,10 +22,12 @@ exports.match = function(event, commandPrefix) {
 
 var toggleAssociation = function(thread, hook, text) {
 	hook = hook.toLowerCase();
-	if (exports.config[thread] && exports.config[thread][hook] && !text) {
-		delete exports.config[thread][hook];
-		return false;
-	}
+    if (!text) {
+        if (exports.config[thread] && exports.config[thread][hook]) {
+            delete exports.config[thread][hook];
+        }
+        return false;
+    }
 
 	if (!exports.config[thread]) {
 		exports.config[thread] = {};
@@ -60,8 +62,8 @@ exports.run = function(api, event) {
 	}
 
 	if (!isCommand && event.__associateCmd) {
-		for (var i = 0; i < event.__assocateCmd.responses.length; i++) {
-			api.sendImage("file", event.__associatedCmd.responses[i], event.thread_id);
+		for (var i = 0; i < event.__associateCmd.responses.length; i++) {
+			api.sendImage("file", event.__associateCmd.responses[i], "", event.thread_id);
 		}
 	    return;
 	}
@@ -70,6 +72,6 @@ exports.run = function(api, event) {
 		return api.sendMessage('Invalid arguments, use /help assocfile for help.', event.thread_id);
 	}
 
-	toggleAssociation(event.thread_id, event.arguments[1], event.arguments[3]);
+	toggleAssociation(event.thread_id, event.arguments[1], event.arguments[2]);
 	api.sendMessage('Association of file changed.', event.thread_id);
 };
