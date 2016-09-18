@@ -1,4 +1,5 @@
-//This module is "assocfile" instead of "associatefile", becase "associate" module is catching all commands starting with "associate"
+// This module is "assocfile" instead of "associatefile", becase "associate" module is catching all commands starting with "associate"
+var path = require('path');
 
 exports.match = function(event, commandPrefix) {
 	if (event.arguments[0] === commandPrefix + 'assocfile') {
@@ -14,7 +15,7 @@ exports.match = function(event, commandPrefix) {
 					responses: []
 				};
 			}
-			event.__associateCmd.responses.push('files\\' + exports.config[event.thread_id][assoc]);
+			event.__associateCmd.responses.push(path.resolve('./files/' + exports.config[event.thread_id][assoc]));
 		}
 	}
 	return !!event.__associateCmd;
