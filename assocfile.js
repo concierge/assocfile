@@ -33,7 +33,7 @@ const updateCache = () => {
 exports.load = updateCache;
 
 exports.match = (event, commandPrefix) => {
-    if (event.arguments[0] === `${commandPrefix}associate`) {
+    if (event.arguments[0] === `${commandPrefix}assocfile`) {
         return true;
     }
 
@@ -76,7 +76,8 @@ const clear = (api, event) => {
 const executeResponses = (api, event) => {
     const outSettings = ensure(ensure(exports.config, 'settings'), event.thread_id);
     for (let response of event.__associateResp) {
-        api.sendMessage(response, event.thread_id);
+        const dir = outSettings.directory || ensure(ensure(exports.config, 'settings'), 'directory', './files/');
+        api.sendImage("file", dir + response, "", event.thread_id);
         if (outSettings.loopback === true) {
             const newEvent = shim.createEvent(event.thread_id, event.sender_id, event.sender_name, response);
             newEvent.event_source = event.event_source;
@@ -100,9 +101,9 @@ exports.run = (api, event) => {
 	}
 
 	if (event.arguments.length !== 2 && event.arguments.length !== 3) {
-		return api.sendMessage('WTF are you doing????!', event.thread_id);
+		return api.sendMessage('Invalid arguments, use /help assocfile for help.', event.thread_id);
 	}
 
 	toggleAssociation(event.thread_id, event.arguments[1], event.arguments[2]);
-	api.sendMessage('Association changed.', event.thread_id);
+	api.sendMessage('Association of file changed.', event.thread_id);
 };
